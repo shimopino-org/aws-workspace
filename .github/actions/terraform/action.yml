@@ -49,7 +49,6 @@ runs:
       working-directory: ${{ inputs.working_directory }}
 
     - name: Update PR
-      shell: bash
       if: github.event_name == 'pull_request'
       uses: actions/github-script@v6
       id: plan-comment
