@@ -29,6 +29,10 @@ resource "aws_iam_role" "github_actions" {
       },
     ]
   })
+
+  tags = {
+    Name = "admin-github-actions-role"
+  }
 }
 
 resource "aws_iam_role_policy_attachment" "github_actions_policy" {

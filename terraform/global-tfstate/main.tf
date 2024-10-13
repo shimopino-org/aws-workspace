@@ -6,6 +6,10 @@ locals {
 
 resource "aws_s3_bucket" "global_bucket" {
   bucket = "${var.bucket_name}-${local.current_account_id}"
+
+  tags = {
+    Name = "${var.bucket_name}-${local.current_account_id}"
+  }
 }
 
 resource "aws_s3_bucket_versioning" "global_bucket_versioning" {

@@ -1,0 +1,109 @@
+name: Terraform Shared Actions
+description: GitHub Actions for Terraform
+
+inputs:
+  working-directory:
+    description: The directory containing the Terraform code
+    required: true
+  terraform-version:
+    description: The version of Terraform to use
+    required: false
+    default: "1.9.7"
+  github-token:
+    description: The GitHub token to use
+    required: true
+
+# 共通設定ファイル内で permissions を指定することはできません。
+# permissions はワークフローレベルで設定する必要があります。
+# このアクションを使用するワークフローファイル内で permissions を指定してください。
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: ${{ inputs.terraform-version }}
+
+    - name: Terraform Init
+      shell: bash
+      run: terraform init -backend-config=./backend_config.hcl
+      working-directory: ${{ inputs.working-directory }}
+
+    # フォーマット確認と構文バリデーションは常に実行する
+    - name: Terraform Format Check
+      shell: bash
+      run: terraform fmt -recursive -check
+      working-directory: ${{ inputs.working-directory }}
+
+    - name: Terraform Validate
+      shell: bash
+      run: terraform validate
+      working-directory: ${{ inputs.working-directory }}
+
+    # プルリクエストの場合のみプランを実行して変更差分をコメントする
+    - name: Terraform Plan
+      shell: bash
+      if: github.event_name == 'pull_request'
+      run: terraform plan -out=tfplan
+      working-directory: ${{ inputs.working-directory }}
+      continue-on-error: true
+
+    - name: Terraform Show Plan
+      shell: bash
+      if: github.event_name == 'pull_request'
+      id: show_plan
+      run: terraform show -no-color tfplan > plan.txt
+      working-directory: ${{ inputs.working-directory }}
+
+    - name: Update PR
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v6
+      id: plan-comment
+      env:
+        WORKING_DIRECTORY: ${{ inputs.working-directory }}
+      with:
+        github-token: ${{ inputs.github-token }}
+        script: |
+          const fs = require('fs');
+          const workingDirectory = process.env.WORKING_DIRECTORY;
+          const planOutput = fs.readFileSync(`${workingDirectory}/plan.txt`, 'utf8');
+
+          const output = `#### Terraform Plan Output in ${workingDirectory}
+          \`\`\`
+          ${planOutput}
+          \`\`\``;
+
+          const { data: comments } = await github.rest.issues.listComments({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: context.issue.number,
+          });
+
+          const botComment = comments.find(comment =>
+            comment.user.type === 'Bot' && comment.body.includes(`Terraform Plan Output in ${workingDirectory}`)
+          );
+
+          if (botComment) {
+            await github.rest.issues.updateComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              comment_id: botComment.id,
+              body: output
+            });
+          } else {
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            });
+          }
+
+    # main ブランチにマージされた場合のみ適用を実行する
+    - name: Terraform apply
+      shell: bash
+      if: github.ref == 'refs/heads/main'
+      run: terraform apply -auto-approve
+      continue-on-error: true
+      working-directory: ${{ inputs.working-directory }}
