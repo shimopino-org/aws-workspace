@@ -5,6 +5,9 @@ on:
     branches:
       - main
   pull_request:
+    branches:
+      - main
+    types: [opened, synchronize]
 
 permissions:
   id-token: write
@@ -30,9 +33,6 @@ jobs:
         with:
           terraform_version: "1.9.7"
 
-      - name: Change directory to global-tfstate
-        run: cd terraform/global-tfstate
-
       - name: Terraform fmt
         run: terraform fmt -recursive -check
         working-directory: terraform/global-tfstate
@@ -46,6 +46,53 @@ jobs:
         working-directory: terraform/global-tfstate
 
       - name: Terraform plan
-        run: terraform plan
+        if: github.event_name == 'pull_request'
+        run: terraform plan -out=tfplan
+        continue-on-error: true
+        working-directory: terraform/global-tfstate
+
+      - name: Update PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v6
+        id: plan-comment
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const planOutput = fs.readFileSync('terraform/global-tfstate/tfplan', 'utf8');
+            const output = `#### Terraform Plan Output
+            \`\`\`
+            ${planOutput}
+            \`\`\``;
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            const botComment = comments.find(comment =>
+              comment.user.type === 'Bot' && comment.body.includes('Terraform Plan Output')
+            );
+
+            if (botComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: output
+              });
+            } else {
+              await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: output
+              });
+            }
+
+      - name: Terraform apply
+        if: github.ref == 'refs/heads/main'
+        run: terraform apply -auto-approve
         continue-on-error: true
         working-directory: terraform/global-tfstate
