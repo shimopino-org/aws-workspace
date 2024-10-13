@@ -38,7 +38,7 @@ jobs:
         working-directory: terraform/global-tfstate
 
       - name: Terraform init
-        run: terraform init
+        run: terraform init -backend-config=./backend_config.hcl
         working-directory: terraform/global-tfstate
 
       - name: Terraform validate
