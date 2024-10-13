@@ -13,16 +13,15 @@ on:
     paths:
       - "terraform/global-tfstate/**"
 
-permissions:
-  id-token: write
-  contents: read
-  pull-requests: write
-  issues: write
-
 jobs:
   terraform:
     name: Manage Global Terraform State
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+      pull-requests: write
+      issues: write
 
     steps:
       - name: Checkout
@@ -39,3 +38,4 @@ jobs:
         uses: ./.github/actions/terraform
         with:
           working-directory: terraform/global-tfstate
+          github-token: ${{ secrets.GITHUB_TOKEN }}

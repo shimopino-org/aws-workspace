@@ -13,16 +13,15 @@ on:
     paths:
       - "terraform/github-actions/**"
 
-permissions:
-  id-token: write
-  contents: read
-  pull-requests: write
-  issues: write
-
 jobs:
   terraform:
     name: Manage GitHub Actions Terraform State
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+      pull-requests: write
+      issues: write
 
     steps:
       - name: Checkout
@@ -39,3 +38,4 @@ jobs:
         uses: ./.github/actions/terraform
         with:
           working-directory: terraform/github-actions
+          github-token: ${{ secrets.GITHUB_TOKEN }}
