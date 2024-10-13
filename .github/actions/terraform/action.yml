@@ -64,8 +64,10 @@ runs:
         github-token: ${{ inputs.github-token }}
         script: |
           const fs = require('fs');
-          const planOutput = fs.readFileSync('${{ inputs.working-directory }}/plan.txt', 'utf8');
-          const output = `#### Terraform Plan Output in ${inputs.working-directory}
+          const workingDirectory = core.getInput('working-directory');
+          const planOutput = fs.readFileSync(`${workingDirectory}/plan.txt`, 'utf8');
+
+          const output = `#### Terraform Plan Output in ${workingDirectory}
           \`\`\`
           ${planOutput}
           \`\`\``;
@@ -77,7 +79,7 @@ runs:
           });
 
           const botComment = comments.find(comment =>
-            comment.user.type === 'Bot' && comment.body.includes(`Terraform Plan Output in ${inputs.working-directory}`)
+            comment.user.type === 'Bot' && comment.body.includes(`Terraform Plan Output in ${workingDirectory}`)
           );
 
           if (botComment) {
@@ -103,4 +105,3 @@ runs:
       run: terraform apply -auto-approve
       continue-on-error: true
       working-directory: ${{ inputs.working-directory }}
-
