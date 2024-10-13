@@ -53,6 +53,12 @@ jobs:
         continue-on-error: true
         working-directory: terraform/global-tfstate
 
+      - name: Terraform show
+        id: terraform_show
+        if: github.event_name == 'pull_request'
+        run: terraform show -no-color tfplan > plan.txt
+        working-directory: terraform/global-tfstate
+
       - name: Update PR
         if: github.event_name == 'pull_request'
         uses: actions/github-script@v6
@@ -61,7 +67,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const fs = require('fs');
-            const planOutput = fs.readFileSync('terraform/global-tfstate/tfplan', 'utf8');
+            const planOutput = fs.readFileSync('terraform/global-tfstate/plan.txt', 'utf8');
             const output = `#### Terraform Plan Output
             \`\`\`
             ${planOutput}
