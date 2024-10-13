@@ -1,4 +1,4 @@
-name: Terraform
+name: Manage GitHub Actions Terraform State
 
 on:
   push:
@@ -21,7 +21,7 @@ permissions:
 
 jobs:
   terraform:
-    name: Terraform Playground
+    name: Manage GitHub Actions Terraform State
     runs-on: ubuntu-latest
 
     steps:
