@@ -28,25 +28,25 @@ runs:
     - name: Terraform Init
       shell: bash
       run: terraform init -backend-config=./backend_config.hcl
-      working-directory: ${{ inputs.working_directory }}
+      working-directory: ${{ inputs.working-directory }}
 
     # フォーマット確認と構文バリデーションは常に実行する
     - name: Terraform Format Check
       shell: bash
       run: terraform fmt -recursive -check
-      working-directory: ${{ inputs.working_directory }}
+      working-directory: ${{ inputs.working-directory }}
 
     - name: Terraform Validate
       shell: bash
       run: terraform validate
-      working-directory: ${{ inputs.working_directory }}
+      working-directory: ${{ inputs.working-directory }}
 
     # プルリクエストの場合のみプランを実行して変更差分をコメントする
     - name: Terraform Plan
       shell: bash
       if: github.event_name == 'pull_request'
       run: terraform plan -out=tfplan
-      working-directory: ${{ inputs.working_directory }}
+      working-directory: ${{ inputs.working-directory }}
       continue-on-error: true
 
     - name: Terraform Show Plan
@@ -54,7 +54,7 @@ runs:
       if: github.event_name == 'pull_request'
       id: show_plan
       run: terraform show -no-color tfplan > plan.txt
-      working-directory: ${{ inputs.working_directory }}
+      working-directory: ${{ inputs.working-directory }}
 
     - name: Update PR
       if: github.event_name == 'pull_request'
@@ -64,8 +64,8 @@ runs:
         github-token: ${{ inputs.github-token }}
         script: |
           const fs = require('fs');
-          const planOutput = fs.readFileSync('${{ inputs.working_directory }}/plan.txt', 'utf8');
-          const output = `#### Terraform Plan Output in ${inputs.working_directory}
+          const planOutput = fs.readFileSync('${{ inputs.working-directory }}/plan.txt', 'utf8');
+          const output = `#### Terraform Plan Output in ${inputs.working-directory}
           \`\`\`
           ${planOutput}
           \`\`\``;
@@ -77,7 +77,7 @@ runs:
           });
 
           const botComment = comments.find(comment =>
-            comment.user.type === 'Bot' && comment.body.includes(`Terraform Plan Output in ${inputs.working_directory}`)
+            comment.user.type === 'Bot' && comment.body.includes(`Terraform Plan Output in ${inputs.working-directory}`)
           );
 
           if (botComment) {
@@ -102,5 +102,5 @@ runs:
       if: github.ref == 'refs/heads/main'
       run: terraform apply -auto-approve
       continue-on-error: true
-      working-directory: ${{ inputs.working_directory }}
+      working-directory: ${{ inputs.working-directory }}
 
