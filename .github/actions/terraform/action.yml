@@ -24,27 +24,32 @@ runs:
 
     # フォーマット確認と構文バリデーションは常に実行する
     - name: Terraform Format Check
+      shell: bash
       run: terraform fmt -recursive -check
       working-directory: ${{ inputs.working_directory }}
 
     - name: Terraform Validate
+      shell: bash
       run: terraform validate
       working-directory: ${{ inputs.working_directory }}
 
     # プルリクエストの場合のみプランを実行して変更差分をコメントする
     - name: Terraform Plan
+      shell: bash
       if: github.event_name == 'pull_request'
       run: terraform plan -out=tfplan
       working-directory: ${{ inputs.working_directory }}
       continue-on-error: true
 
     - name: Terraform Show Plan
+      shell: bash
       if: github.event_name == 'pull_request'
       id: show_plan
       run: terraform show -no-color tfplan > plan.txt
       working-directory: ${{ inputs.working_directory }}
 
     - name: Update PR
+      shell: bash
       if: github.event_name == 'pull_request'
       uses: actions/github-script@v6
       id: plan-comment
@@ -86,6 +91,7 @@ runs:
 
     # main ブランチにマージされた場合のみ適用を実行する
     - name: Terraform apply
+      shell: bash
       if: github.ref == 'refs/heads/main'
       run: terraform apply -auto-approve
       continue-on-error: true
