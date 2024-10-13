@@ -60,11 +60,13 @@ runs:
       if: github.event_name == 'pull_request'
       uses: actions/github-script@v6
       id: plan-comment
+      env:
+        WORKING_DIRECTORY: ${{ inputs.working-directory }}
       with:
         github-token: ${{ inputs.github-token }}
         script: |
           const fs = require('fs');
-          const workingDirectory = core.getInput('working-directory');
+          const workingDirectory = process.env.WORKING_DIRECTORY;
           const planOutput = fs.readFileSync(`${workingDirectory}/plan.txt`, 'utf8');
 
           const output = `#### Terraform Plan Output in ${workingDirectory}
