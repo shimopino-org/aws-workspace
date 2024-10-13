@@ -1,0 +1,41 @@
+name: Terraform
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "terraform/github-actions/**"
+  pull_request:
+    branches:
+      - main
+    types: [opened, synchronize]
+    paths:
+      - "terraform/github-actions/**"
+
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  terraform:
+    name: Terraform Playground
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # https://docs.github.com/ja/actions/security-for-github-actions/security-hardening-your-deployments/configuring-openid-connect-in-amazon-web-services
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::998141369043:role/admin-github-actions-role
+          aws-region: ap-northeast-1
+
+      - name: Terraform Operations
+        uses: ./.github/actions/terraform
+        with:
+          working-directory: terraform/github-actions
