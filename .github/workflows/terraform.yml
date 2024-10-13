@@ -35,13 +35,17 @@ jobs:
 
       - name: Terraform fmt
         run: terraform fmt -recursive -check
+        working-directory: terraform/global-tfstate
 
       - name: Terraform init
         run: terraform init
+        working-directory: terraform/global-tfstate
 
       - name: Terraform validate
         run: terraform validate
+        working-directory: terraform/global-tfstate
 
       - name: Terraform plan
         run: terraform plan
         continue-on-error: true
+        working-directory: terraform/global-tfstate
