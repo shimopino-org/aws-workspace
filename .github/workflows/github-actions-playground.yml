@@ -27,4 +27,4 @@ jobs:
         uses: ./.github/actions/code-execution
         with:
           environment: ${{ github.event.inputs.environment }}
-          sample-value: ${{ github.event.inputs.sample-value }}
+          sampleValue: ${{ github.event.inputs.sample-value }}

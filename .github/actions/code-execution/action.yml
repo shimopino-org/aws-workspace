@@ -5,7 +5,7 @@ inputs:
   environment:
     description: '環境を選択してください'
     required: true
-  sample-value:
+  sampleValue:
     description: 'サンプルの値を入力してください'
     required: true
 
@@ -18,7 +18,12 @@ runs:
         script: |
           const script = require('./.github/actions/code-execution/main.js');
 
-          console.log(`environment: ${{ inputs.environment }}`);
-          console.log(`sample-value: ${{ inputs.sample-value }}`);
+          // 以下のように直接入力値をスクリプトに渡すことも可能
+          // console.log(`environment: ${{ inputs.environment }}`);
+          // console.log(`sampleValue: ${{ inputs.sampleValue }}`);
 
           script({ github, context, core });
+      # https://github.com/actions/github-script/issues/56#issuecomment-1886207262
+      env:
+        INPUT_ENVIRONMENT: ${{ inputs.environment }}
+        INPUT_SAMPLE_VALUE: ${{ inputs.sampleValue }}
