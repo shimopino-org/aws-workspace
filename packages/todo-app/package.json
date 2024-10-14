@@ -1,0 +1,11 @@
+{
+  "name": "aws-workspaces-todo-app",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "start": "ts-node src/index.ts",
+    "build": "tsc",
+    "package": "zip -j dist/function.zip dist/handler.js"
+  }
+}
