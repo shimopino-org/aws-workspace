@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import { addTask, getTask, updateTask, deleteTask, listTasks } from "../services/dynamodb";
-import { nanoid } from "nanoid";
+import { v4 as uuidv4 } from 'uuid';
 
 interface Task {
   id: string;
@@ -15,7 +15,7 @@ const tasksApp = new Hono();
 tasksApp.post("/tasks", async (c) => {
   const { title, description } = await c.req.json();
   const newTask: Task = {
-    id: nanoid(),
+    id: uuidv4(),
     title,
     description,
     completed: false,
