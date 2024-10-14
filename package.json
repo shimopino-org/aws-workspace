@@ -1,0 +1,17 @@
+{
+  "name": "aws-workspaces",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces --if-present",
+    "package": "npm run package --workspaces --if-present"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.145",
+    "@types/node": "^22.7.5",
+    "typescript": "^5.6.3"
+  }
+}
