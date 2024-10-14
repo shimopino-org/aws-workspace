@@ -1,0 +1,43 @@
+name: Todo App Deploy
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "app-infras/environment/todo-app/**"
+      - "packages/todo-app/**"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "app-infras/environment/todo-app/**"
+      - "packages/todo-app/**"
+
+jobs:
+  build-and-deploy:
+    name: Build and Deploy
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+      pull-requests: write
+      issues: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Node.jsのインストールを行う
+      - name: Setup Node.js
+        uses: ./.github/actions/node-setup
+
+      # AWS環境にデプロイメントを行う
+      - name: Configure AWS credentials
+        uses: ./.github/actions/aws-configure
+
+      - name: Terraform Operations
+        uses: ./.github/actions/terraform
+        with:
+          working-directory: app-infras/environment/todo-app
+          github-token: ${{ secrets.GITHUB_TOKEN }}
