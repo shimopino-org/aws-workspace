@@ -6,6 +6,6 @@
   "scripts": {
     "start": "ts-node src/index.ts",
     "build": "tsc",
-    "package": "zip -j dist/function.zip dist/handler.js"
+    "package": "zip -j dist/function.zip dist/*"
   }
 }
