@@ -28,21 +28,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # Node.jsのインストールとビルドを行う
+      # Node.jsのインストールを行う
       - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: "npm"
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build
-        run: npm run build
-
-      - name: Packaging
-        run: npm run package
+        uses: ./.github/actions/node-setup
 
       # AWS環境にデプロイメントを行う
       - name: Configure AWS credentials
