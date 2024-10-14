@@ -9,6 +9,12 @@ resource "aws_lambda_function" "todo_app" {
   handler          = "dist/handler.handler"
   filename         = local.lambda_zip_path
   source_code_hash = filebase64sha256(local.lambda_zip_path)
+
+  environment {
+    variables = {
+      DYNAMODB_TABLE = aws_dynamodb_table.todo_tasks.name
+    }
+  }
 }
 
 resource "aws_iam_role" "lambda_exec_role" {
@@ -34,4 +40,25 @@ resource "aws_iam_role_policy_attachment" "lambda_policy" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
+resource "aws_iam_role_policy" "lambda_dynamodb_policy" {
+  name = "lambda-dynamodb-policy"
+  role = aws_iam_role.lambda_exec_role.id
 
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "dynamodb:PutItem",
+          "dynamodb:GetItem",
+          "dynamodb:DeleteItem",
+          "dynamodb:UpdateItem",
+          "dynamodb:Scan",
+          "dynamodb:Query"
+        ]
+        Resource = aws_dynamodb_table.todo_tasks.arn
+      }
+    ]
+  })
+}
