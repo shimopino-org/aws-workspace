@@ -1,0 +1,10 @@
+{
+  "name": "aws-workspaces-hello-world",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "package": "zip -j dist/function.zip dist/index.js"
+  }
+}
