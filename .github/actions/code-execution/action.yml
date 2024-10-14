@@ -16,5 +16,5 @@ runs:
       uses: actions/github-script@v7
       with:
         script: |
-          const script = require('./main.js');
+          const script = require('./.github/actions/code-execution/main.js');
           script({ github, context, core });
