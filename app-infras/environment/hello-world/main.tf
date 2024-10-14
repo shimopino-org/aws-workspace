@@ -1,9 +1,14 @@
+locals {
+  lambda_zip_path = "../../../packages/hello-world/dist/function.zip"
+}
+
 resource "aws_lambda_function" "hello_world" {
-  function_name = "hello-world"
-  role          = aws_iam_role.lambda_exec_role.arn
-  runtime       = "nodejs20.x"
-  handler       = "index.handler"
-  filename      = "../../../packages/hello-world/dist/function.zip"
+  function_name    = "hello-world"
+  role             = aws_iam_role.lambda_exec_role.arn
+  runtime          = "nodejs20.x"
+  handler          = "index.handler"
+  filename         = local.lambda_zip_path
+  source_code_hash = filebase64sha256(local.lambda_zip_path)
 }
 
 resource "aws_iam_role" "lambda_exec_role" {
