@@ -23,6 +23,7 @@ export const addTask = async (task: Task): Promise<Task | null> => {
     Item: task,
   }
   const result = await dynamodb.send(new PutCommand(params));
+  console.log(`DynamoDB PutItem result: ${JSON.stringify(result)}`);
   return result.Attributes as Task | null;
 }
 
@@ -32,6 +33,7 @@ export const getTask = async (id: string): Promise<Task | null> => {
     Key: { id },
   };
   const result = await dynamodb.send(new GetCommand(params));
+  console.log(`DynamoDB GetItem result: ${JSON.stringify(result)}`);
   return result.Item as Task | null;
 };
 
@@ -48,6 +50,7 @@ export const updateTask = async (task: Task): Promise<Task | null> => {
     ReturnValues: ReturnValue.ALL_NEW,
   };
   const result = await dynamodb.send(new UpdateCommand(params));
+  console.log(`DynamoDB UpdateItem result: ${JSON.stringify(result)}`);
   return result.Attributes as Task | null;
 };
 
@@ -57,6 +60,7 @@ export const deleteTask = async (id: string): Promise<Task | null> => {
     Key: { id },
   };
   const result = await dynamodb.send(new DeleteCommand(params));
+  console.log(`DynamoDB DeleteItem result: ${JSON.stringify(result)}`);
   return result.Attributes as Task | null;
 };
 
@@ -65,5 +69,6 @@ export const listTasks = async (): Promise<Task[]> => {
     TableName: TABLE_NAME,
   };
   const result = await dynamodb.send(new ScanCommand(params));
+  console.log(`DynamoDB Scan result: ${JSON.stringify(result)}`);
   return result.Items as Task[];
 };

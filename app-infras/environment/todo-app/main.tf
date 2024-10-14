@@ -2,6 +2,11 @@ locals {
   lambda_zip_path = "../../../packages/todo-app/dist/function.zip"
 }
 
+resource "aws_cloudwatch_log_group" "todo_app" {
+  name              = "/aws/lambda/todo-app"
+  retention_in_days = 3
+}
+
 resource "aws_lambda_function" "todo_app" {
   function_name    = "todo-app"
   role             = aws_iam_role.lambda_exec_role.arn
@@ -9,6 +14,11 @@ resource "aws_lambda_function" "todo_app" {
   handler          = "dist/handler.handler"
   filename         = local.lambda_zip_path
   source_code_hash = filebase64sha256(local.lambda_zip_path)
+
+  logging_config {
+    log_format = "JSON"
+    log_group  = aws_cloudwatch_log_group.todo_app.name
+  }
 
   environment {
     variables = {
