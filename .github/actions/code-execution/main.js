@@ -1,7 +1,7 @@
 module.exports = async ({ github, context, core }) => {
   try {
     const environment = core.getInput("environment");
-    const sampleValue = core.getInput("sampleValue");
+    const sampleValue = core.getInput("sample_value");
     console.log(`Hello ${environment}!`);
     console.log(`Hello ${sampleValue}!`);
 
