@@ -11,7 +11,7 @@ const client = new DynamoDBClient({})
 const dynamodb = DynamoDBDocumentClient.from(client)
 
 interface Task {
-  id: number;
+  id: string;
   title: string;
   description: string;
   completed: boolean;

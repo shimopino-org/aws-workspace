@@ -1,8 +1,9 @@
 import { Hono } from "hono";
 import { addTask, getTask, updateTask, deleteTask, listTasks } from "../services/dynamodb";
+import { nanoid } from "nanoid";
 
 interface Task {
-  id: number;
+  id: string;
   title: string;
   description: string;
   completed: boolean;
@@ -14,7 +15,7 @@ const tasksApp = new Hono();
 tasksApp.post("/tasks", async (c) => {
   const { title, description } = await c.req.json();
   const newTask: Task = {
-    id: Date.now(),
+    id: nanoid(),
     title,
     description,
     completed: false,
@@ -46,7 +47,7 @@ tasksApp.get("/tasks/:id", async (c) => {
 tasksApp.put("/tasks/:id", async (c) => {
   const { id } = c.req.param();
   const { title, description, completed } = await c.req.json();
-  const task = await updateTask({ id: Number(id), title, description, completed });
+  const task = await updateTask({ id: id, title, description, completed });
   if (task) {
     return c.json(task, 200);
   }
