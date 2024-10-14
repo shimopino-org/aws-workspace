@@ -5,7 +5,7 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "start": "ts-node src/index.ts",
-    "build": "rm -rf dist && tsc",
-    "package": "zip -r dist/function.zip dist/*"
+    "build": "rm -rf dist && node esbuild.config.js",
+    "package": "zip -r dist/function.zip dist/* node_modules/*"
   }
 }
