@@ -1,5 +1,5 @@
 import { DynamoDBClient, ReturnValue } from "@aws-sdk/client-dynamodb"
-import { DynamoDBDocumentClient, PutCommand, GetCommand, UpdateCommand, DeleteCommand, ScanCommand } from "@aws-sdk/lib-dynamodb"
+import { DynamoDBDocumentClient, PutCommand, GetCommand, UpdateCommand, DeleteCommand, ScanCommand, PutCommandInput } from "@aws-sdk/lib-dynamodb"
 
 // 環境変数のバリデーション
 const TABLE_NAME = process.env.DYNAMODB_TABLE;
@@ -18,9 +18,10 @@ interface Task {
 }
 
 export const addTask = async (task: Task): Promise<Task | null> => {
-  const params = {
+  const params: PutCommandInput = {
     TableName: TABLE_NAME,
     Item: task,
+    ReturnValues: ReturnValue.ALL_NEW,
   }
   const result = await dynamodb.send(new PutCommand(params));
   console.log(`DynamoDB PutItem result: ${JSON.stringify(result)}`);
@@ -58,6 +59,7 @@ export const deleteTask = async (id: string): Promise<Task | null> => {
   const params = {
     TableName: TABLE_NAME,
     Key: { id },
+    ReturnValues: ReturnValue.ALL_OLD,
   };
   const result = await dynamodb.send(new DeleteCommand(params));
   console.log(`DynamoDB DeleteItem result: ${JSON.stringify(result)}`);
