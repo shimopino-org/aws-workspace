@@ -15,7 +15,7 @@ resource "aws_apigatewayv2_stage" "hello_world_stage" {
 resource "aws_apigatewayv2_integration" "hello_world_integration" {
   api_id             = aws_apigatewayv2_api.hello_world_api.id
   integration_type   = "AWS_PROXY"
-  integration_method = "GET"
+  integration_method = "POST"
   integration_uri    = aws_lambda_function.hello_world.invoke_arn
 }
 
