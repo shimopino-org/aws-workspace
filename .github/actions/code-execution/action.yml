@@ -10,5 +10,11 @@ inputs:
     required: true
 
 runs:
-  using: "node20"
-  main: "main.js"
+  using: "composite"
+  steps:
+    - name: Sample Code Execution
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const script = require('./main.js');
+          script({ github, context, core });
