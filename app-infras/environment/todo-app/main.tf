@@ -6,7 +6,7 @@ resource "aws_lambda_function" "todo_app" {
   function_name    = "todo-app"
   role             = aws_iam_role.lambda_exec_role.arn
   runtime          = "nodejs20.x"
-  handler          = "handler.handler"
+  handler          = "dist/handler.handler"
   filename         = local.lambda_zip_path
   source_code_hash = filebase64sha256(local.lambda_zip_path)
 }

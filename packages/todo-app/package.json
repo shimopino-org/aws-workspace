@@ -6,6 +6,6 @@
   "scripts": {
     "start": "ts-node src/index.ts",
     "build": "rm -rf dist && node esbuild.config.js",
-    "package": "zip -r dist/function.zip dist/* node_modules/*"
+    "package": "zip -r dist/function.zip dist/*"
   }
 }
