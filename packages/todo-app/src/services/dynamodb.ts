@@ -21,7 +21,7 @@ export const addTask = async (task: Task): Promise<Task | null> => {
   const params: PutCommandInput = {
     TableName: TABLE_NAME,
     Item: task,
-    ReturnValues: ReturnValue.ALL_NEW,
+    ReturnValues: ReturnValue.ALL_OLD,
   }
   const result = await dynamodb.send(new PutCommand(params));
   console.log(`DynamoDB PutItem result: ${JSON.stringify(result)}`);
