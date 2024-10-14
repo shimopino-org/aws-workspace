@@ -6,9 +6,9 @@ module.exports = async ({ github, context, core }) => {
     console.log(`Hello ${sampleValue}!`);
 
     // コンテキスト情報の取得
-    console.log(`Event Name: ${context.eventName}`);
-    console.log(`Workflow: ${context.workflow}`);
-    console.log(`Actor: ${context.actor}`);
+    console.log(`Event Name: ${context.eventName}`); // workflow_dispatch
+    console.log(`Workflow: ${context.workflow}`); // GitHub Actions Playground
+    console.log(`Actor: ${context.actor}`); // shimopino
 
     const time = new Date().toTimeString();
     core.setOutput("time", time);
