@@ -3,7 +3,7 @@ locals {
 }
 
 resource "aws_cloudwatch_log_group" "todo_app" {
-  name              = "/aws/lambda/todo-app"
+  name              = "/aws/lambda/todo-app/web.stdout.log"
   retention_in_days = 3
 }
 
