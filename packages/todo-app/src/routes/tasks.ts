@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import { addTask, getTask, updateTask, deleteTask, listTasks } from "../services/dynamodb";
 
 interface Task {
   id: number;
@@ -7,33 +8,34 @@ interface Task {
   completed: boolean;
 }
 
-let tasks: Task[] = [];
-let currentId = 1;
-
 const tasksApp = new Hono();
 
 // POST /tasks
 tasksApp.post("/tasks", async (c) => {
   const { title, description } = await c.req.json();
   const newTask: Task = {
-    id: currentId++,
+    id: Date.now(),
     title,
     description,
     completed: false,
   };
-  tasks.push(newTask);
-  return c.json(newTask, 201);
+  const task = await addTask(newTask);
+  if (task) {
+    return c.json(task, 201);
+  }
+  return c.json({ message: "Failed to add task" }, 500);
 })
 
 // GET /tasks
-tasksApp.get("/tasks", (c) => {
+tasksApp.get("/tasks", async (c) => {
+  const tasks = await listTasks();
   return c.json(tasks, 200);
 })
 
 // GET /tasks/:id
-tasksApp.get("/tasks/:id", (c) => {
+tasksApp.get("/tasks/:id", async (c) => {
   const { id } = c.req.param();
-  const task = tasks.find(task => task.id === Number(id));
+  const task = await getTask(id);
   if (task) {
     return c.json(task, 200);
   }
@@ -44,26 +46,19 @@ tasksApp.get("/tasks/:id", (c) => {
 tasksApp.put("/tasks/:id", async (c) => {
   const { id } = c.req.param();
   const { title, description, completed } = await c.req.json();
-  const taskIndex = tasks.findIndex(task => task.id === Number(id));
-  if (taskIndex !== -1) {
-    tasks[taskIndex] = {
-      ...tasks[taskIndex],
-      title,
-      description,
-      completed,
-    };
-    return c.json(tasks[taskIndex], 200);
+  const task = await updateTask({ id: Number(id), title, description, completed });
+  if (task) {
+    return c.json(task, 200);
   }
   return c.json({ message: `Task with id ${id} not found` }, 404);
 })
 
 // DELETE /tasks/:id
-tasksApp.delete("/tasks/:id", (c) => {
+tasksApp.delete("/tasks/:id", async (c) => {
   const { id } = c.req.param();
-  const taskIndex = tasks.findIndex(task => task.id === Number(id));
-  if (taskIndex !== -1) {
-    tasks.splice(taskIndex, 1);
-    return c.json({ message: `Task with id ${id} deleted` }, 200);
+  const task = await deleteTask(id);
+  if (task) {
+    return c.json(task, 200);
   }
   return c.json({ message: `Task with id ${id} not found` }, 404);
 })
