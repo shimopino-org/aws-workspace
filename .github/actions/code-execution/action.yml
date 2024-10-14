@@ -17,4 +17,8 @@ runs:
       with:
         script: |
           const script = require('./.github/actions/code-execution/main.js');
+
+          console.log(`environment: ${{ inputs.environment }}`);
+          console.log(`sample-value: ${{ inputs.sample-value }}`);
+
           script({ github, context, core });

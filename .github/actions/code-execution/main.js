@@ -6,7 +6,6 @@ module.exports = async ({ github, context, core }) => {
     console.log(`Hello ${sampleValue}!`);
 
     // コンテキスト情報の取得
-    const context = github.context;
     console.log(`Event Name: ${context.eventName}`);
     console.log(`Workflow: ${context.workflow}`);
     console.log(`Actor: ${context.actor}`);
