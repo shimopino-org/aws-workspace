@@ -1,0 +1,22 @@
+name: AWS Configure
+description: AWS Configure
+
+inputs:
+  role-to-assume:
+    description: The role to assume
+    required: true
+    default: "arn:aws:iam::998141369043:role/admin-github-actions-role"
+  aws-region:
+    description: The AWS region to use
+    required: true
+    default: "ap-northeast-1"
+
+runs:
+  using: "composite"
+  steps:
+    # https://docs.github.com/ja/actions/security-for-github-actions/security-hardening-your-deployments/configuring-openid-connect-in-amazon-web-services
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: ${{ inputs.role-to-assume }}
+        aws-region: ${{ inputs.aws-region }}
