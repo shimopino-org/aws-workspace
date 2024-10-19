@@ -20,11 +20,18 @@ resource "aws_lambda_function" "todo_app" {
     log_group  = aws_cloudwatch_log_group.todo_app.name
   }
 
+  tracing_config {
+    mode = "ACTIVE"
+  }
+
   environment {
     variables = {
-      DYNAMODB_TABLE = aws_dynamodb_table.todo_tasks.name
+      DYNAMODB_TABLE          = aws_dynamodb_table.todo_tasks.name
+      AWS_LAMBDA_EXEC_WRAPPER = "/opt/otel-handler"
     }
   }
+
+  layers = ["arn:aws:lambda:ap-northeast-1:901920570463:layer:aws-otel-nodejs-amd64-ver-1-17-1:1"]
 }
 
 resource "aws_iam_role" "lambda_exec_role" {
@@ -68,6 +75,29 @@ resource "aws_iam_role_policy" "lambda_dynamodb_policy" {
           "dynamodb:Query"
         ]
         Resource = aws_dynamodb_table.todo_tasks.arn
+      }
+    ]
+  })
+}
+
+# AWS XRayにトレースを送信できるようにする
+resource "aws_iam_role_policy" "xray_policy" {
+  name = "lambda-xray-policy"
+  role = aws_iam_role.lambda_exec_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "xray:PutTraceSegments",
+          "xray:PutTelemetryRecords",
+          "xray:GetSamplingRules",
+          "xray:GetSamplingTargets",
+          "xray:GetSamplingStatisticSummaries"
+        ]
+        Resource = "*"
       }
     ]
   })

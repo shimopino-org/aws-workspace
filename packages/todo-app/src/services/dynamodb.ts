@@ -1,5 +1,6 @@
 import { DynamoDBClient, ReturnValue } from "@aws-sdk/client-dynamodb"
 import { DynamoDBDocumentClient, PutCommand, GetCommand, UpdateCommand, DeleteCommand, ScanCommand, PutCommandInput } from "@aws-sdk/lib-dynamodb"
+import { tracer } from '../tracing';
 
 // 環境変数のバリデーション
 const TABLE_NAME = process.env.DYNAMODB_TABLE;
@@ -7,7 +8,7 @@ if (!TABLE_NAME) {
   throw new Error("DYNAMODB_TABLE 環境変数が設定されていません。");
 }
 
-const client = new DynamoDBClient({})
+const client = tracer.captureAWSv3Client(new DynamoDBClient({}));
 const dynamodb = DynamoDBDocumentClient.from(client)
 
 interface Task {
