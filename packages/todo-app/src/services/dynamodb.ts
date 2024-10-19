@@ -17,7 +17,7 @@ interface Task {
   completed: boolean;
 }
 
-export const addTask = async (task: Task): Promise<Task | null> => {
+export const addTask = async (task: Task): Promise<void> => {
   const params: PutCommandInput = {
     TableName: TABLE_NAME,
     Item: task,
@@ -25,7 +25,6 @@ export const addTask = async (task: Task): Promise<Task | null> => {
   }
   const result = await dynamodb.send(new PutCommand(params));
   console.log(`DynamoDB PutItem result: ${JSON.stringify(result)}`);
-  return result.Attributes as Task | null;
 }
 
 export const getTask = async (id: string): Promise<Task | null> => {

@@ -20,11 +20,8 @@ tasksApp.post("/tasks", async (c) => {
     description,
     completed: false,
   };
-  const task = await addTask(newTask);
-  if (task) {
-    return c.json(task, 201);
-  }
-  return c.json({ message: "Failed to add task" }, 500);
+  await addTask(newTask);
+  return c.json(newTask, 201);
 })
 
 // GET /tasks
