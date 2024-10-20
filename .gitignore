@@ -1,6 +1,10 @@
+### Mac ###
+.DS_Store
+
 ### Node ###
 node_modules
 dist
+.env.local
 
 ### Terraform ###
 # Local .terraform directories

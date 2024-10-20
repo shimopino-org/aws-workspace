@@ -7,7 +7,9 @@
   ],
   "scripts": {
     "build": "npm run build --workspaces --if-present",
-    "package": "npm run package --workspaces --if-present"
+    "package": "npm run package --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
+    "format": "npm run format --workspaces --if-present"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.145",
