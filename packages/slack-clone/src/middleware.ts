@@ -13,6 +13,9 @@ export default convexAuthNextjsMiddleware((request) => {
 	}
 
 	// If the user is authenticated, we can continue to the requested page.
+	if (isPuclicPage(request) && isAuthenticatedNextjs()) {
+		return nextjsMiddlewareRedirect(request, "/");
+	}
 });
 
 export const config = {
