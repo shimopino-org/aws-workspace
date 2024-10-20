@@ -1,0 +1,32 @@
+name: Todo App Deploy
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "packages/slack-clone/**"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "packages/slack-clone/**"
+
+jobs:
+  build-and-deploy:
+    name: Build and Deploy
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+      pull-requests: write
+      issues: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Node.jsのインストールを行う
+      - name: Setup Node.js
+        uses: ./.github/actions/node-setup
+
