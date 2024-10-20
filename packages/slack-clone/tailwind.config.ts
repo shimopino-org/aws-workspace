@@ -3,9 +3,11 @@ import type { Config } from "tailwindcss";
 const config: Config = {
 	darkMode: ["class"],
 	content: [
+		// ここに指定されたファイルに含まれるクラスしか、Tailwind CSSは生成しない
 		"./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
 		"./src/components/**/*.{js,ts,jsx,tsx,mdx}",
 		"./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+		"./src/features/**/*.{js,ts,jsx,tsx,mdx}",
 	],
 	theme: {
 		extend: {
