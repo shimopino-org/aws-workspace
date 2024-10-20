@@ -19,7 +19,8 @@ jobs:
       - name: CodeGuru Reviewer
         uses: aws-actions/codeguru-reviewer@v1.1
         with:
-          build_path: target
+          # この設定は .jar ファイルや .class ファイルを前提にしているようなので Java だけで使えるものかも
+          # build_path: target
           s3_bucket: codeguru-reviewer-998141369043
 
       - name: Upload review result
