@@ -68,7 +68,7 @@ export const SignUpCard = ({ setState }: SignUpCardProps) => {
 				<Separator />
 				<Button
 					disabled={false}
-					onChange={() => {}}
+					onClick={() => {}}
 					className="w-full relative"
 					variant="outline"
 				>
@@ -77,7 +77,7 @@ export const SignUpCard = ({ setState }: SignUpCardProps) => {
 				</Button>
 				<Button
 					disabled={false}
-					onChange={() => {}}
+					onClick={() => {}}
 					className="w-full relative"
 					variant="outline"
 				>
