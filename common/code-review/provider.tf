@@ -9,7 +9,7 @@ terraform {
   }
 
   backend "s3" {
-    key = "github-actions/terraform.tfstate"
+    key = "code-review/terraform.tfstate"
   }
 }
 

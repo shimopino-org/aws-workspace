@@ -1,4 +1,4 @@
-name: Todo App Deploy
+name: Slack Clone Build
 
 on:
   push:
