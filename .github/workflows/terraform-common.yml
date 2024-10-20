@@ -1,0 +1,39 @@
+name: CodeGuru Reviewer Settings
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "common/code-review/**"
+  pull_request:
+    branches:
+      - main
+    types: [opened, synchronize]
+    paths:
+      - "common/code-review/**"
+
+jobs:
+  terraform:
+    name: CodeGuru Reviewer Settings
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+      pull-requests: write
+      issues: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: ./.github/actions/aws-configure
+
+      - name: Terraform Operations
+        uses: ./.github/actions/terraform
+        with:
+          working-directory: common/code-review
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+
