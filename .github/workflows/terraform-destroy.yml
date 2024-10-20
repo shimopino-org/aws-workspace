@@ -26,6 +26,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup Node.js
+        uses: ./.github/actions/node-setup
+
       - name: Configure AWS credentials
         uses: ./.github/actions/aws-configure
 
