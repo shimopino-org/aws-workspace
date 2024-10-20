@@ -1,0 +1,28 @@
+name: Terraform Destroy
+
+on:
+  workflow_dispatch:
+    inputs:
+      working-directory:
+        description: "削除対象のインフラを管理するディレクトリを選択してください"
+        required: true
+        type: string
+        default: "app-infras/environment/hello-world"
+
+jobs:
+  terraform:
+    name: Terraform Destroy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: ./.github/actions/aws-configure
+
+      - name: Terraform Operations
+        uses: ./.github/actions/terraform
+        with:
+          working-directory: ${{ github.event.inputs.working-directory}}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
