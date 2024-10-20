@@ -8,6 +8,8 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
+import { useAuthActions } from "@convex-dev/auth/react";
+import { TriangleAlert } from "lucide-react";
 import { useState } from "react";
 import { FaGithub } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
@@ -18,9 +20,34 @@ interface SignUpCardProps {
 }
 
 export const SignUpCard = ({ setState }: SignUpCardProps) => {
+	const { signIn } = useAuthActions();
+
+	const [isLoading, setIsLoading] = useState(false);
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [confirmPassword, setConfirmPassword] = useState("");
+	const [error, setError] = useState("");
+
+	const onPasswordSignUp = (e: React.FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
+
+		if (password !== confirmPassword) {
+			setError("Passwords do not match");
+			return;
+		}
+
+		setIsLoading(true);
+		signIn("password", { email, password, flow: "signUp" })
+			.catch(() => {
+				setError("Something is wrong");
+			})
+			.finally(() => setIsLoading(false));
+	};
+
+	const handleSignIn = (value: "github" | "google") => {
+		setIsLoading(true);
+		signIn(value).finally(() => setIsLoading(false));
+	};
 
 	return (
 		<Card className="w-full h-hull p-8">
@@ -31,9 +58,15 @@ export const SignUpCard = ({ setState }: SignUpCardProps) => {
 				</CardDescription>
 			</CardHeader>
 			<CardContent className="space-y-5 px-0 pb-0">
-				<form className="space-y-2.5">
+				{!!error && (
+					<div className="bg-destructive/15 text-destructive p-3 flex items-center gap-x-2 text-sm rounded-md">
+						<TriangleAlert className="size-4" />
+						<p>{error}</p>
+					</div>
+				)}
+				<form onSubmit={onPasswordSignUp} className="space-y-2.5">
 					<Input
-						disabled={false}
+						disabled={isLoading}
 						value={email}
 						onChange={(e) => setEmail(e.target.value)}
 						type="email"
@@ -41,7 +74,7 @@ export const SignUpCard = ({ setState }: SignUpCardProps) => {
 						required
 					/>
 					<Input
-						disabled={false}
+						disabled={isLoading}
 						value={password}
 						onChange={(e) => setPassword(e.target.value)}
 						type="password"
@@ -49,7 +82,7 @@ export const SignUpCard = ({ setState }: SignUpCardProps) => {
 						required
 					/>
 					<Input
-						disabled={false}
+						disabled={isLoading}
 						value={confirmPassword}
 						onChange={(e) => setConfirmPassword(e.target.value)}
 						type="password"
@@ -57,7 +90,7 @@ export const SignUpCard = ({ setState }: SignUpCardProps) => {
 						required
 					/>
 					<Button
-						disabled={false}
+						disabled={isLoading}
 						className="w-full"
 						size="default"
 						type="submit"
@@ -67,8 +100,8 @@ export const SignUpCard = ({ setState }: SignUpCardProps) => {
 				</form>
 				<Separator />
 				<Button
-					disabled={false}
-					onClick={() => {}}
+					disabled={isLoading}
+					onClick={() => handleSignIn("google")}
 					className="w-full relative"
 					variant="outline"
 				>
@@ -76,8 +109,8 @@ export const SignUpCard = ({ setState }: SignUpCardProps) => {
 					Continue with Google
 				</Button>
 				<Button
-					disabled={false}
-					onClick={() => {}}
+					disabled={isLoading}
+					onClick={() => handleSignIn("github")}
 					className="w-full relative"
 					variant="outline"
 				>

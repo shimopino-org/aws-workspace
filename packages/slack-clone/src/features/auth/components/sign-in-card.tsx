@@ -9,6 +9,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { useAuthActions } from "@convex-dev/auth/react";
+import { TriangleAlert } from "lucide-react";
 import { useState } from "react";
 import { FaGithub } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
@@ -21,12 +22,25 @@ interface SignInCardProps {
 export const SignInCard = ({ setState }: SignInCardProps) => {
 	const { signIn } = useAuthActions();
 
+	const [isLoading, setIsLoading] = useState(false);
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
+	const [error, setError] = useState("");
+
+	const onPasswordSignIn = (e: React.FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
+
+		setIsLoading(true);
+		signIn("password", { email, password, flow: "signIn" })
+			.catch(() => {
+				setError("Something is wrong");
+			})
+			.finally(() => setIsLoading(false));
+	};
 
 	const handleSignIn = (value: "github" | "google") => {
-		console.log("handleSignIn value", value);
-		signIn(value);
+		setIsLoading(true);
+		signIn(value).finally(() => setIsLoading(false));
 	};
 
 	return (
@@ -38,9 +52,15 @@ export const SignInCard = ({ setState }: SignInCardProps) => {
 				</CardDescription>
 			</CardHeader>
 			<CardContent className="space-y-5 px-0 pb-0">
-				<form className="space-y-2.5">
+				{!!error && (
+					<div className="text-destructive flex items-center gap-x-2 bg-destructive/15 p-3 rounded-md text-sm">
+						<TriangleAlert className="size-4" />
+						<p>{error}</p>
+					</div>
+				)}
+				<form onSubmit={onPasswordSignIn} className="space-y-2.5">
 					<Input
-						disabled={false}
+						disabled={isLoading}
 						value={email}
 						onChange={(e) => setEmail(e.target.value)}
 						type="email"
@@ -48,7 +68,7 @@ export const SignInCard = ({ setState }: SignInCardProps) => {
 						required
 					/>
 					<Input
-						disabled={false}
+						disabled={isLoading}
 						value={password}
 						onChange={(e) => setPassword(e.target.value)}
 						type="password"
@@ -58,7 +78,7 @@ export const SignInCard = ({ setState }: SignInCardProps) => {
 					<Button
 						type="submit"
 						className="w-full"
-						disabled={false}
+						disabled={isLoading}
 						size="default"
 					>
 						Continue
@@ -66,8 +86,8 @@ export const SignInCard = ({ setState }: SignInCardProps) => {
 				</form>
 				<Separator />
 				<Button
-					disabled={false}
-					onClick={() => {}}
+					disabled={isLoading}
+					onClick={() => handleSignIn("google")}
 					variant="outline"
 					className="w-full relative"
 				>
@@ -75,7 +95,7 @@ export const SignInCard = ({ setState }: SignInCardProps) => {
 					Continue with Google
 				</Button>
 				<Button
-					disabled={false}
+					disabled={isLoading}
 					onClick={() => handleSignIn("github")}
 					variant="outline"
 					className="w-full relative"
