@@ -9,10 +9,18 @@ on:
         type: string
         default: "app-infras/environment/hello-world"
 
+env:
+  TERRAFORM_VERSION: "1.9.7"
+
 jobs:
   terraform:
     name: Terraform Destroy
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+      pull-requests: write
+      issues: write
 
     steps:
       - name: Checkout
@@ -21,8 +29,15 @@ jobs:
       - name: Configure AWS credentials
         uses: ./.github/actions/aws-configure
 
-      - name: Terraform Operations
-        uses: ./.github/actions/terraform
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
         with:
-          working-directory: ${{ github.event.inputs.working-directory}}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+
+      - name: Terraform Init
+        run: terraform init -backend-config=./backend_config.hcl
+        working-directory: ${{ github.event.inputs.working-directory }}
+
+      - name: Terraform Destroy
+        run: terraform destroy -auto-approve
+        working-directory: ${{ github.event.inputs.working-directory }}
