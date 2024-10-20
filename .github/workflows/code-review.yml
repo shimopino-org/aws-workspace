@@ -1,0 +1,30 @@
+name: Code Review
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  code-review:
+    name: Code Review
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: CodeGuru Reviewer
+        uses: aws-actions/codeguru-reviewer@v1.1
+        with:
+          build_path: target
+          s3_bucket: codeguru-reviewer-998141369043
+
+      - name: Upload review result
+        # プルリクエストや Security Issues に対して実行される
+        if: ${{ github.event_name != 'push' }}
+        uses: github/codeql-action/upload-sarif@v1
+        with:
+          sarif_file: codeguru-results.sarif.json # Your results file will be named codeguru-results.sarif.json
