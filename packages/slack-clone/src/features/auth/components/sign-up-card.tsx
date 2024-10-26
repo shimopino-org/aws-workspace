@@ -23,6 +23,7 @@ export const SignUpCard = ({ setState }: SignUpCardProps) => {
 	const { signIn } = useAuthActions();
 
 	const [isLoading, setIsLoading] = useState(false);
+	const [name, setName] = useState("");
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [confirmPassword, setConfirmPassword] = useState("");
@@ -37,7 +38,7 @@ export const SignUpCard = ({ setState }: SignUpCardProps) => {
 		}
 
 		setIsLoading(true);
-		signIn("password", { email, password, flow: "signUp" })
+		signIn("password", { name, email, password, flow: "signUp" })
 			.catch(() => {
 				setError("Something is wrong");
 			})
@@ -65,6 +66,14 @@ export const SignUpCard = ({ setState }: SignUpCardProps) => {
 					</div>
 				)}
 				<form onSubmit={onPasswordSignUp} className="space-y-2.5">
+					<Input
+						disabled={isLoading}
+						value={name}
+						onChange={(e) => setName(e.target.value)}
+						type="text"
+						placeholder="Name"
+						required
+					/>
 					<Input
 						disabled={isLoading}
 						value={email}
